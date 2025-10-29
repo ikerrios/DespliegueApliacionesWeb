@@ -1,0 +1,66 @@
+services:
+  db:
+    image: postgres:15
+    container_name: postgres-prod
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: root123
+      POSTGRES_DB: productos
+      POSTGRES_USER: usuario_app
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U usuario_app -d productos"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  backend:
+    build:
+      context: ../backend       # 👈 sube al backend donde está el Dockerfile
+      dockerfile: Dockerfile
+    container_name: backend-prod
+    environment:
+      SPRING_PROFILES_ACTIVE: "prod"
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/actuator/health || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 8
+
+  php:
+    image: php:8.2-apache        # 👈 no hace falta Dockerfile para PHP
+    container_name: php-prod
+    ports:
+      - "8088:80"
+    volumes:
+      - ./frontend:/var/www/html
+    environment:
+      API_BASE_URL: "http://backend:8080"
+    depends_on:
+      backend:
+        condition: service_healthy
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin-prod
+    restart: always
+    ports:
+      - "8086:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    depends_on:
+      db:
+        condition: service_healthy
+
+networks:
+  default:
+    name: fullstack_net_prod
