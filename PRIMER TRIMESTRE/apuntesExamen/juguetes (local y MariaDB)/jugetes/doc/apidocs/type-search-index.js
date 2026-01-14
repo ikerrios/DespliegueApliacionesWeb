@@ -1,0 +1,1 @@
+typeSearchIndex = [{"l":"All Classes and Interfaces","u":"allclasses-index.html"},{"p":"com.tienda.jugetes.controller","l":"JuController"},{"p":"com.tienda.jugetes.entity","l":"Jugete"},{"p":"com.tienda.jugetes","l":"JugetesApplication"},{"p":"com.tienda.jugetes.repository","l":"JuRepository"}];updateSearchResults();

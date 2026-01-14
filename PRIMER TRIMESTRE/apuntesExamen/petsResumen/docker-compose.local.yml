@@ -1,0 +1,24 @@
+services:
+  apiprueba:
+    build: .
+    container_name: apiprueba
+    restart: always
+    environment:
+      SPRING_PROFILES_ACTIVE: local
+    ports:
+      - "8085:8080"
+
+  dbprueba:
+    image: mysql:8.0
+    container_name: baseDatosprueba
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    restart: always
+    volumes:
+      - ./sql/mysql:/docker-entrypoint-initdb.d
+      - db_data:/var/lib/mysql
+    ports:
+      - "3308:3306"
+
+volumes:
+  db_data:

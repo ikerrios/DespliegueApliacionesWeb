@@ -1,0 +1,70 @@
+version: "3.9"
+
+services:
+  backend:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    container_name: backend-prod
+    environment:
+      SPRING_PROFILES_ACTIVE: "prod"
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/actuator/health || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 8
+
+  php:
+    build:
+      context: ./frontend-php
+      dockerfile: Dockerfile
+    container_name: php-prod
+    ports:
+      - "8088:80"
+    environment:
+      # En prod, el frontend llama al backend por nombre de servicio
+      API_BASE_URL: "http://backend:8080"
+      DB_HOST: "db"
+      DB_PORT: "5432"
+      DB_NAME: "appdb"
+      DB_USER: "appuser"
+      DB_PASS: "apppass"
+    depends_on:
+      backend:
+        condition: service_healthy
+
+  db:
+    image: postgres:16
+    container_name: postgres-prod
+    environment:
+      POSTGRES_DB: appdb
+      POSTGRES_USER: appuser
+      POSTGRES_PASSWORD: apppass
+    volumes:
+      - ./db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U appuser -d appdb"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  pgadmin:
+    image: dpage/pgadmin4:8
+    container_name: pgadmin-prod
+    ports:
+      - "8090:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@local.dev
+      PGADMIN_DEFAULT_PASSWORD: adminpass
+    depends_on:
+      db:
+        condition: service_healthy
+
+networks:
+  default:
+    name: fullstack_net_prod

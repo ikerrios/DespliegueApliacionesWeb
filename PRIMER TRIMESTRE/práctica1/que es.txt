@@ -1,0 +1,9 @@
+- creamos repositorios en git hub
+
+- con el spring initializr creamos el repositorio de la api-rest
+
+- arrancamos en visual studio code
+
+- escribimos en Google localhost: 8080
+
+- subimos los archivos de GitHub desktop a github

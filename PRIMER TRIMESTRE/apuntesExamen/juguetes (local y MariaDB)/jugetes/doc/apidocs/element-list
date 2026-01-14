@@ -1,0 +1,4 @@
+com.tienda.jugetes
+com.tienda.jugetes.controller
+com.tienda.jugetes.entity
+com.tienda.jugetes.repository

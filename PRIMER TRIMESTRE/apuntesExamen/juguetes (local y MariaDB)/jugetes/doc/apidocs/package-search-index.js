@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"com.tienda.jugetes"},{"l":"com.tienda.jugetes.controller"},{"l":"com.tienda.jugetes.entity"},{"l":"com.tienda.jugetes.repository"}];updateSearchResults();

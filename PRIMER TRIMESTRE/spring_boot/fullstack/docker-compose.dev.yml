@@ -1,0 +1,42 @@
+version: "3.9"
+
+services:
+  php:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    container_name: php-dev
+    ports:
+      - "8088:80"
+    environment:
+      # El backend va fuera de Docker (host) y escucha en 8080
+      API_BASE_URL: "http://host.docker.internal:8080"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"  # necesario en Linux
+
+  db:
+    image: postgres:15
+    container_name: postgres-dev
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_PASSWORD: root123
+      POSTGRES_DB: productos
+      POSTGRES_USER: usuario_app
+    volumes:
+      - ./db-data:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin-dev
+    ports:
+      - "8086:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    depends_on:
+      - db
+
+networks:
+  default:
+    name: fullstack_net_dev

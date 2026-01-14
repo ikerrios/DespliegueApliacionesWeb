@@ -1,0 +1,8 @@
+services:
+  api:
+    build: .
+    container_name: jug-api
+    environment:
+      SPRING_PROFILES_ACTIVE: maria
+    ports:
+      - "8081:8080"
